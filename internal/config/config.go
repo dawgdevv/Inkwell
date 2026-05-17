@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
@@ -15,7 +16,7 @@ var DB *gorm.DB
 func Init() {
 	_ = godotenv.Load()
 
-	dbURL := os.Getenv("DATABASE_URL")
+	dbURL := strings.TrimSpace(os.Getenv("DATABASE_URL"))
 	if dbURL == "" {
 		fmt.Println("DATABASE_URL is required for Neon connection")
 		os.Exit(1)
@@ -46,6 +47,10 @@ func GetJWTSecret() string {
 		return "default-secret-change-me"
 	}
 	return secret
+}
+
+func GetGeminiAPIKey() string {
+	return os.Getenv("GEMINI_API_KEY")
 }
 
 func GetPort() string {

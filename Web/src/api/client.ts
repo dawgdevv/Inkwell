@@ -110,6 +110,12 @@ export const api = {
     email: string
     'my features': Record<string, string>
   }>('/about'),
+
+  predict: (context: string) =>
+    request<{ suggestions: string[] }>('/api/predict', {
+      method: 'POST',
+      body: JSON.stringify({ context }),
+    }),
 }
 
 export { ApiError }

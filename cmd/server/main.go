@@ -48,6 +48,7 @@ func main() {
 		apiGroup.POST("/login", api.Login)
 		apiGroup.GET("/about", api.About)
 		apiGroup.GET("/openapi.json", serveOpenAPI)
+		apiGroup.POST("/api/predict", api.Predict)
 
 		// Protected routes
 		protected := apiGroup.Group("/")

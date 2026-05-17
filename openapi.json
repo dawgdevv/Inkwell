@@ -3,7 +3,7 @@
   "info": {
     "title": "Inkwell Notes API",
     "version": "1.0.0",
-    "description": "A multi-user notes service with version history"
+    "description": "A multi-user notes service with version history and AI autocomplete"
   },
   "paths": {
     "/register": {
@@ -25,15 +25,15 @@
           }
         },
         "responses": {
-          "201": { "description": "User created" },
+          "201": { "description": "User created successfully" },
           "400": { "description": "Invalid input" },
-          "409": { "description": "Email already exists" }
+          "409": { "description": "Email already registered" }
         }
       }
     },
     "/login": {
       "post": {
-        "summary": "Authenticate user",
+        "summary": "Authenticate user and get JWT token",
         "requestBody": {
           "required": true,
           "content": {
@@ -63,13 +63,13 @@
               }
             }
           },
-          "401": { "description": "Invalid credentials" }
+          "401": { "description": "Invalid email or password" }
         }
       }
     },
     "/notes": {
       "get": {
-        "summary": "Get all notes",
+        "summary": "Get all notes created by the authenticated user",
         "security": [{ "bearerAuth": [] }],
         "parameters": [
           { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
@@ -86,7 +86,8 @@
                 }
               }
             }
-          }
+          },
+          "401": { "description": "Unauthorized" }
         }
       },
       "post": {
@@ -108,24 +109,27 @@
           }
         },
         "responses": {
-          "201": { "description": "Note created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Note" } } } }
+          "201": { "description": "Note created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Note" } } } },
+          "400": { "description": "Invalid input" },
+          "401": { "description": "Unauthorized" }
         }
       }
     },
     "/notes/{id}": {
       "get": {
-        "summary": "Get a specific note",
+        "summary": "Get a specific note by ID",
         "security": [{ "bearerAuth": [] }],
         "parameters": [
           { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
         ],
         "responses": {
           "200": { "description": "Note found", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Note" } } } },
+          "401": { "description": "Unauthorized" },
           "404": { "description": "Note not found" }
         }
       },
       "put": {
-        "summary": "Update a note",
+        "summary": "Update an existing note",
         "security": [{ "bearerAuth": [] }],
         "parameters": [
           { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
@@ -146,7 +150,10 @@
           }
         },
         "responses": {
-          "200": { "description": "Note updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Note" } } } }
+          "200": { "description": "Note updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Note" } } } },
+          "400": { "description": "Invalid input" },
+          "401": { "description": "Unauthorized" },
+          "404": { "description": "Note not found or unauthorized" }
         }
       },
       "delete": {
@@ -156,7 +163,9 @@
           { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
         ],
         "responses": {
-          "204": { "description": "Note deleted" }
+          "204": { "description": "Note deleted" },
+          "401": { "description": "Unauthorized" },
+          "404": { "description": "Note not found or unauthorized" }
         }
       }
     },
@@ -182,7 +191,11 @@
           }
         },
         "responses": {
-          "200": { "description": "Note shared successfully" }
+          "200": { "description": "Note shared successfully" },
+          "400": { "description": "Invalid input or cannot share with yourself" },
+          "401": { "description": "Unauthorized" },
+          "404": { "description": "Note or user not found" },
+          "409": { "description": "Note already shared with this user" }
         }
       }
     },
@@ -194,7 +207,9 @@
           { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
         ],
         "responses": {
-          "200": { "description": "List of versions" }
+          "200": { "description": "List of versions" },
+          "401": { "description": "Unauthorized" },
+          "404": { "description": "Note not found" }
         }
       }
     },
@@ -220,27 +235,74 @@
           }
         },
         "responses": {
-          "200": { "description": "Note restored" }
+          "200": { "description": "Note restored" },
+          "400": { "description": "Invalid input" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Only note owner can restore" },
+          "404": { "description": "Note or version not found" }
+        }
+      }
+    },
+    "/shared-notes": {
+      "get": {
+        "summary": "Get notes shared with the authenticated user",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 10 } }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of shared notes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Note" }
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized" }
         }
       }
     },
     "/search": {
       "get": {
-        "summary": "Search notes",
+        "summary": "Search notes by title or content",
         "security": [{ "bearerAuth": [] }],
         "parameters": [
           { "name": "q", "in": "query", "required": true, "schema": { "type": "string" } }
         ],
         "responses": {
-          "200": { "description": "Search results" }
+          "200": { "description": "Search results" },
+          "400": { "description": "Search query required" },
+          "401": { "description": "Unauthorized" }
         }
       }
     },
     "/about": {
       "get": {
-        "summary": "About the application",
+        "summary": "About the application and creator",
         "responses": {
-          "200": { "description": "About information" }
+          "200": {
+            "description": "About information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "name": { "type": "string" },
+                    "email": { "type": "string" },
+                    "my features": {
+                      "type": "object",
+                      "additionalProperties": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -251,7 +313,7 @@
           "200": { "description": "OpenAPI JSON" }
         }
       }
-    }
+    },
   },
   "components": {
     "schemas": {

@@ -49,10 +49,6 @@ func GetJWTSecret() string {
 	return secret
 }
 
-func GetGeminiAPIKey() string {
-	return os.Getenv("GEMINI_API_KEY")
-}
-
 func GetPort() string {
 	port := os.Getenv("PORT")
 	if port == "" {

@@ -1,8 +1,7 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Save, Trash2, Share2, Clock, RotateCcw, X, Sparkles } from 'lucide-react'
+import { ArrowLeft, Save, Trash2, Share2, Clock, RotateCcw, X } from 'lucide-react'
 import { api, type NoteVersion } from '../api/client'
-import { useAutocomplete } from '../hooks/useAutocomplete'
 import './NoteEditor.css'
 
 export default function NoteEditor() {
@@ -21,24 +20,6 @@ export default function NoteEditor() {
   const [showVersions, setShowVersions] = useState(false)
   const [versions, setVersions] = useState<NoteVersion[]>([])
   const [versionsLoading, setVersionsLoading] = useState(false)
-
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
-  const ghostRef = useRef<HTMLDivElement>(null)
-
-  const {
-    suggestion,
-    isLoading: isPredicting,
-    acceptSuggestion,
-    dismissSuggestion,
-  } = useAutocomplete(textareaRef, content)
-
-  // Sync scroll between textarea and ghost overlay
-  const handleScroll = useCallback(() => {
-    if (textareaRef.current && ghostRef.current) {
-      ghostRef.current.scrollTop = textareaRef.current.scrollTop
-      ghostRef.current.scrollLeft = textareaRef.current.scrollLeft
-    }
-  }, [])
 
   const fetchNote = useCallback(async () => {
     if (isNew) return
@@ -141,31 +122,6 @@ export default function NoteEditor() {
     }).format(new Date(dateStr))
   }
 
-  const handleTextareaKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (suggestion) {
-      if (e.key === 'Tab') {
-        e.preventDefault()
-        const newContent = acceptSuggestion()
-        if (newContent) setContent(newContent)
-        return
-      }
-      if (e.key === 'Escape') {
-        dismissSuggestion()
-        return
-      }
-    }
-  }
-
-  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setContent(e.target.value)
-  }
-
-  // Determine if ghost text should show (only when cursor is at end)
-  const showGhost =
-    suggestion &&
-    textareaRef.current &&
-    textareaRef.current.selectionStart === content.length
-
   if (isLoading) {
     return (
       <div className="editor-loading">
@@ -222,43 +178,13 @@ export default function NoteEditor() {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
-        <div className="editor-content-wrapper">
-          {showGhost && (
-            <div
-              ref={ghostRef}
-              className="editor-ghost"
-              aria-hidden="true"
-            >
-              {content}
-              <span className="ghost-suggestion">{suggestion}</span>
-            </div>
-          )}
-          <textarea
-            ref={textareaRef}
-            className="editor-content"
-            placeholder="Start writing..."
-            value={content}
-            onChange={handleTextareaChange}
-            onKeyDown={handleTextareaKeyDown}
-            onScroll={handleScroll}
-            rows={20}
-            spellCheck={false}
-            autoComplete="off"
-            autoCorrect="off"
-          />
-          {isPredicting && (
-            <div className="autocomplete-loading" title="Thinking...">
-              <Sparkles size={14} />
-            </div>
-          )}
-        </div>
-        {suggestion && (
-          <div className="autocomplete-hint">
-            <span className="autocomplete-hint-text">
-              <kbd>Tab</kbd> to accept <strong>"{suggestion}"</strong>
-            </span>
-          </div>
-        )}
+        <textarea
+          className="editor-content"
+          placeholder="Start writing..."
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          rows={20}
+        />
       </div>
 
       {/* Share Panel */}

@@ -3,9 +3,10 @@ package api
 import (
 	"net/http"
 
-	"github.com/gin-gonic/gin"
 	"github.com/dawgdevv/fi_money/internal/config"
 	"github.com/dawgdevv/fi_money/internal/models"
+	"github.com/dawgdevv/fi_money/internal/utils"
+	"github.com/gin-gonic/gin"
 )
 
 type ShareRequest struct {
@@ -15,6 +16,11 @@ type ShareRequest struct {
 func ShareNote(c *gin.Context) {
 	userID := c.GetString("userID")
 	noteID := c.Param("id")
+
+	if !utils.IsValidUUID(noteID) {
+		c.JSON(http.StatusNotFound, gin.H{"message": "Note not found or unauthorized"})
+		return
+	}
 
 	// Verify note exists and belongs to user
 	var note models.Note

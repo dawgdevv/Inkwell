@@ -11,7 +11,7 @@ A full-stack multi-user notes application with version history, note sharing, an
 - **Note Sharing** — Share notes with other registered users via email.
 - **Version History** — Every edit is automatically saved as a version. Restore to any previous version.
 - **Full-text Search** — Search through your own notes and notes shared with you.
-- **AI-Powered Autocomplete** — Gemini 2.5 Flash predicts the next word as you type. Ghost text overlay + Tab to accept.
+- **Shared Notes Feed** — View all notes that other users have shared with you.
 - **Responsive Web UI** — React + Vite SPA with a clean, modern interface.
 - **OpenAPI Spec** — API documented at `/openapi.json`.
 - **Embedded Frontend** — The Go server serves the built React app directly, so it's a single deployable binary.
@@ -25,7 +25,6 @@ A full-stack multi-user notes application with version history, note sharing, an
 | **Backend** | Go 1.24 + Gin |
 | **ORM** | GORM |
 | **Database** | PostgreSQL (hosted on [Neon](https://neon.tech)) |
-| **AI** | Google Gemini 2.5 Flash |
 | **Auth** | JWT (HS256) |
 | **Frontend** | React 19 + Vite |
 | **Styling** | CSS Modules + Lucide icons |
@@ -87,9 +86,6 @@ Edit `.env`:
 ```env
 # Neon PostgreSQL — use the POOLED URL for the app
 DATABASE_URL=postgresql://user:password@your-project-pooler.ap-southeast-1.aws.neon.tech/dbname?sslmode=require
-
-# Gemini API key for AI autocomplete (optional — disables autocomplete if omitted)
-GEMINI_API_KEY=your-gemini-api-key
 
 JWT_SECRET=your-super-secret-jwt-key-change-this
 PORT=8080
@@ -155,16 +151,16 @@ docker-compose up --build
 | POST | `/register` | Public | Create an account |
 | POST | `/login` | Public | Authenticate and get JWT |
 | GET | `/about` | Public | App info |
-| GET | `/notes` | JWT | List paginated notes (own + shared) |
+| GET | `/notes` | JWT | List paginated notes you created |
+| GET | `/shared-notes` | JWT | List notes shared with you |
 | POST | `/notes` | JWT | Create a note |
-| GET | `/notes/:id` | JWT | Get a single note |
+| GET | `/notes/:id` | JWT | Get a single note (own or shared) |
 | PUT | `/notes/:id` | JWT | Update a note (auto-saves version) |
 | DELETE | `/notes/:id` | JWT | Delete a note |
 | POST | `/notes/:id/share` | JWT | Share with another user |
 | GET | `/notes/:id/versions` | JWT | View version history |
 | POST | `/notes/:id/restore` | JWT | Restore to a previous version |
 | GET | `/search?q=...` | JWT | Full-text search |
-| POST | `/api/predict` | Public | AI next-word prediction |
 | GET | `/openapi.json` | Public | API specification |
 
 ---
@@ -175,7 +171,6 @@ docker-compose up --build
 |----------|----------|-------------|
 | `DATABASE_URL` | **Yes** | Neon PostgreSQL connection string. Use the **Pooled** URL. |
 | `JWT_SECRET` | **Yes** | Secret key for signing JWT tokens. |
-| `GEMINI_API_KEY` | No | Google Gemini API key for AI autocomplete. Omit to disable the feature. |
 | `PORT` | No | Server port. Defaults to `8080`. |
 
 ---
@@ -201,24 +196,6 @@ Every time a note is updated, the previous state is automatically saved as a `No
 - Restore the note to any previous version (`POST /notes/:id/restore`).
 
 This provides a "Git-like" safety net for everyday note-taking — no more accidental overwrites.
-
----
-
-## Custom Feature: AI-Powered Autocomplete
-
-As you type in the note editor, Gemini 2.5 Flash predicts the most likely next word based on the context of your last ~100 words. The suggestion appears as ghost text inline with your writing.
-
-**How it works:**
-- **Ghost text overlay** — The predicted word appears in light gray right after your cursor, seamlessly blending with your text.
-- **Tab to accept** — Press `Tab` to insert the suggested word with a trailing space.
-- **Esc to dismiss** — Press `Escape` to clear the suggestion.
-- **Smart debouncing** — API calls are debounced by 250ms and cached for 30 seconds to minimize latency and cost.
-- **Privacy-conscious** — Only the last 100 words are sent to Gemini, never your full note.
-
-**Performance & Cost:**
-- Average latency: ~150-300ms
-- Estimated cost: <$0.01 per user per month (Gemini 2.5 Flash is extremely cheap)
-- Graceful fallback: If the API key is missing or the service is down, autocomplete silently disables with no error UI.
 
 ---
 

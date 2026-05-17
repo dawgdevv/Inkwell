@@ -3,14 +3,20 @@ package api
 import (
 	"net/http"
 
-	"github.com/gin-gonic/gin"
 	"github.com/dawgdevv/fi_money/internal/config"
 	"github.com/dawgdevv/fi_money/internal/models"
+	"github.com/dawgdevv/fi_money/internal/utils"
+	"github.com/gin-gonic/gin"
 )
 
 func GetNoteVersions(c *gin.Context) {
 	userID := c.GetString("userID")
 	noteID := c.Param("id")
+
+	if !utils.IsValidUUID(noteID) {
+		c.JSON(http.StatusNotFound, gin.H{"message": "Note not found"})
+		return
+	}
 
 	// Verify note access
 	var note models.Note
@@ -40,6 +46,11 @@ type RestoreVersionRequest struct {
 func RestoreNoteVersion(c *gin.Context) {
 	userID := c.GetString("userID")
 	noteID := c.Param("id")
+
+	if !utils.IsValidUUID(noteID) {
+		c.JSON(http.StatusForbidden, gin.H{"message": "Only note owner can restore versions"})
+		return
+	}
 
 	// Verify ownership (only owner can restore)
 	var note models.Note

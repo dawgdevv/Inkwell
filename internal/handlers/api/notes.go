@@ -4,9 +4,10 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/gin-gonic/gin"
 	"github.com/dawgdevv/fi_money/internal/config"
 	"github.com/dawgdevv/fi_money/internal/models"
+	"github.com/dawgdevv/fi_money/internal/utils"
+	"github.com/gin-gonic/gin"
 )
 
 type CreateNoteRequest struct {
@@ -33,12 +34,9 @@ func GetNotes(c *gin.Context) {
 	offset := (page - 1) * limit
 
 	var notes []models.Note
-	// Get own notes + shared notes
 	err := config.DB.
-		Distinct("notes.*").
-		Joins("LEFT JOIN note_shares ON note_shares.note_id = notes.id").
-		Where("notes.user_id = ? OR note_shares.shared_with_user_id = ?", userID, userID).
-		Order("notes.updated_at DESC").
+		Where("user_id = ?", userID).
+		Order("updated_at DESC").
 		Limit(limit).Offset(offset).
 		Find(&notes).Error
 
@@ -50,9 +48,43 @@ func GetNotes(c *gin.Context) {
 	c.JSON(http.StatusOK, notes)
 }
 
+func GetSharedNotes(c *gin.Context) {
+	userID := c.GetString("userID")
+
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
+	if page < 1 {
+		page = 1
+	}
+	if limit < 1 || limit > 100 {
+		limit = 10
+	}
+	offset := (page - 1) * limit
+
+	var notes []models.Note
+	err := config.DB.
+		Joins("JOIN note_shares ON note_shares.note_id = notes.id").
+		Where("note_shares.shared_with_user_id = ?", userID).
+		Order("notes.updated_at DESC").
+		Limit(limit).Offset(offset).
+		Find(&notes).Error
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to fetch shared notes"})
+		return
+	}
+
+	c.JSON(http.StatusOK, notes)
+}
+
 func GetNote(c *gin.Context) {
 	userID := c.GetString("userID")
 	noteID := c.Param("id")
+
+	if !utils.IsValidUUID(noteID) {
+		c.JSON(http.StatusNotFound, gin.H{"message": "Note not found"})
+		return
+	}
 
 	var note models.Note
 	err := config.DB.
@@ -95,6 +127,11 @@ func UpdateNote(c *gin.Context) {
 	userID := c.GetString("userID")
 	noteID := c.Param("id")
 
+	if !utils.IsValidUUID(noteID) {
+		c.JSON(http.StatusNotFound, gin.H{"message": "Note not found or unauthorized"})
+		return
+	}
+
 	var note models.Note
 	if err := config.DB.Where("id = ? AND user_id = ?", noteID, userID).First(&note).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": "Note not found or unauthorized"})
@@ -128,6 +165,11 @@ func UpdateNote(c *gin.Context) {
 func DeleteNote(c *gin.Context) {
 	userID := c.GetString("userID")
 	noteID := c.Param("id")
+
+	if !utils.IsValidUUID(noteID) {
+		c.JSON(http.StatusNotFound, gin.H{"message": "Note not found or unauthorized"})
+		return
+	}
 
 	var note models.Note
 	if err := config.DB.Where("id = ? AND user_id = ?", noteID, userID).First(&note).Error; err != nil {

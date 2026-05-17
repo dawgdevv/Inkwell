@@ -48,14 +48,14 @@ func main() {
 		apiGroup.POST("/login", api.Login)
 		apiGroup.GET("/about", api.About)
 		apiGroup.GET("/openapi.json", serveOpenAPI)
-		apiGroup.POST("/api/predict", api.Predict)
 
 		// Protected routes
 		protected := apiGroup.Group("/")
 		protected.Use(middleware.JWTAuth())
 		{
-			protected.GET("/notes", api.GetNotes)
-			protected.GET("/notes/:id", api.GetNote)
+		protected.GET("/notes", api.GetNotes)
+		protected.GET("/shared-notes", api.GetSharedNotes)
+		protected.GET("/notes/:id", api.GetNote)
 			protected.POST("/notes", api.CreateNote)
 			protected.PUT("/notes/:id", api.UpdateNote)
 			protected.DELETE("/notes/:id", api.DeleteNote)

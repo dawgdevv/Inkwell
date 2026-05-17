@@ -111,11 +111,8 @@ export const api = {
     'my features': Record<string, string>
   }>('/about'),
 
-  predict: (context: string) =>
-    request<{ suggestions: string[] }>('/api/predict', {
-      method: 'POST',
-      body: JSON.stringify({ context }),
-    }),
+  sharedNotes: (page = 1, limit = 10) =>
+    request<Note[]>(`/shared-notes?page=${page}&limit=${limit}`),
 }
 
 export { ApiError }

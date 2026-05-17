@@ -7,9 +7,11 @@ COPY Web/ ./
 RUN npm run build
 
 # Build the Go backend
-FROM golang:1.23-alpine AS go-builder
+FROM golang:1.25-alpine AS go-builder
 WORKDIR /app
 COPY go.mod go.sum ./
+# Enable automatic toolchain download so Go can fetch the required version
+ENV GOTOOLCHAIN=auto
 RUN go mod download
 COPY . .
 # Copy the built web assets into the Go embed directory

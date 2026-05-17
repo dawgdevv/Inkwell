@@ -2,6 +2,8 @@
 
 A full-stack multi-user notes application with version history, note sharing, and JWT-based authentication. Built with Go, React, and PostgreSQL (Neon).
 
+![alt text](image.png)
+
 ---
 
 ## Features

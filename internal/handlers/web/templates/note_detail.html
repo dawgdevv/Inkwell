@@ -1,0 +1,9 @@
+{{ define "title" }}Note{{ end }}
+{{ define "content" }}
+<h1>{{ if .IsNew }}New Note{{ else }}Note {{ .NoteID }}{{ end }}</h1>
+<form method="POST" action="/api/notes{{ if .IsNew }}{{ else }}/{{ .NoteID }}{{ end }}">
+    <label>Title: <input type="text" name="title" required></label>
+    <label>Content: <textarea name="content" required></textarea></label>
+    <button type="submit">{{ if .IsNew }}Create{{ else }}Update{{ end }}</button>
+</form>
+{{ end }}

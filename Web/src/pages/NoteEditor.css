@@ -1,0 +1,222 @@
+.note-editor {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-lg);
+  gap: var(--space-md);
+}
+
+.editor-back {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.editor-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.editor-actions button {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.9rem;
+}
+
+.editor-error {
+  padding: var(--space-md);
+  background: rgba(196, 69, 54, 0.06);
+  border: 1px solid rgba(196, 69, 54, 0.2);
+  border-radius: var(--radius-md);
+  color: #c44536;
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-md);
+}
+
+.editor-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.editor-title {
+  font-family: var(--font-serif);
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  border: none;
+  background: transparent;
+  padding: 0;
+  padding-bottom: var(--space-sm);
+  border-bottom: 2px solid var(--cream-300);
+  border-radius: 0;
+  color: var(--ink-900);
+}
+
+.editor-title:focus {
+  border-bottom-color: var(--terracotta);
+  box-shadow: none;
+}
+
+.editor-title::placeholder {
+  color: var(--ink-300);
+}
+
+.editor-content {
+  font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
+  border: none;
+  background: transparent;
+  padding: 0;
+  min-height: 400px;
+  color: var(--ink-700);
+}
+
+.editor-content:focus {
+  box-shadow: none;
+}
+
+.editor-content::placeholder {
+  color: var(--ink-300);
+}
+
+/* Panels (Share, Versions) */
+.panel-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 24, 22, 0.3);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: var(--space-md);
+  animation: fadeIn 0.2s ease-out;
+}
+
+.panel {
+  background: var(--cream-50);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 420px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.panel--wide {
+  max-width: 560px;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--cream-300);
+}
+
+.panel-header h3 {
+  font-size: var(--text-lg);
+}
+
+.panel-body {
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  overflow-y: auto;
+}
+
+.panel-message {
+  font-size: var(--text-sm);
+  color: var(--sage);
+  text-align: center;
+}
+
+.panel-loading {
+  text-align: center;
+  padding: var(--space-lg);
+  color: var(--ink-400);
+}
+
+.panel-empty {
+  text-align: center;
+  padding: var(--space-lg);
+  color: var(--ink-400);
+  font-size: var(--text-sm);
+}
+
+/* Versions list */
+.versions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.version-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--cream-100);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--cream-300);
+}
+
+.version-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.version-date {
+  font-size: var(--text-xs);
+  color: var(--ink-400);
+}
+
+.version-title {
+  font-size: var(--text-sm);
+  color: var(--ink-700);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.version-item button {
+  padding: 0.35rem 0.7rem;
+  font-size: var(--text-xs);
+  flex-shrink: 0;
+}
+
+/* Loading */
+.editor-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2xl);
+  gap: var(--space-md);
+  color: var(--ink-400);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}

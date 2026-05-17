@@ -1,0 +1,248 @@
+/* Inkwell Design System — Warm Editorial Minimalism */
+
+:root {
+  /* Color palette — warm, paper-like tones */
+  --cream-50: #fdfcfa;
+  --cream-100: #faf8f5;
+  --cream-200: #f5f1eb;
+  --cream-300: #ede8df;
+  --cream-400: #ddd5c7;
+  
+  --ink-900: #1a1816;
+  --ink-800: #2d2a26;
+  --ink-700: #4a453f;
+  --ink-600: #6b6359;
+  --ink-500: #8a8075;
+  --ink-400: #a89e91;
+  --ink-300: #c4b9ab;
+  --ink-200: #ddd5c7;
+  --ink-100: #ede8df;
+  
+  --terracotta: #b85c3e;
+  --terracotta-light: #d47a5c;
+  --terracotta-dark: #964a2f;
+  --terracotta-muted: #c47a60;
+  
+  --sage: #7a8b6e;
+  --sage-light: #9aab8e;
+  --sage-muted: #a8b89e;
+  
+  /* Typography */
+  --font-serif: 'Crimson Pro', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  
+  /* Spacing scale — fluid with clamp() */
+  --space-xs: clamp(0.5rem, 0.4rem + 0.25vw, 0.75rem);
+  --space-sm: clamp(0.75rem, 0.6rem + 0.5vw, 1rem);
+  --space-md: clamp(1rem, 0.8rem + 0.75vw, 1.5rem);
+  --space-lg: clamp(1.5rem, 1.2rem + 1vw, 2.5rem);
+  --space-xl: clamp(2.5rem, 2rem + 2vw, 4rem);
+  --space-2xl: clamp(4rem, 3rem + 4vw, 7rem);
+  
+  /* Type scale — fluid */
+  --text-xs: clamp(0.7rem, 0.65rem + 0.15vw, 0.8rem);
+  --text-sm: clamp(0.8rem, 0.75rem + 0.2vw, 0.9rem);
+  --text-base: clamp(0.9rem, 0.8rem + 0.35vw, 1.05rem);
+  --text-lg: clamp(1.1rem, 1rem + 0.4vw, 1.35rem);
+  --text-xl: clamp(1.35rem, 1.1rem + 0.9vw, 2rem);
+  --text-2xl: clamp(1.8rem, 1.4rem + 1.5vw, 3rem);
+  --text-3xl: clamp(2.5rem, 2rem + 2vw, 4rem);
+  
+  /* Line heights */
+  --leading-tight: 1.15;
+  --leading-snug: 1.35;
+  --leading-normal: 1.55;
+  --leading-relaxed: 1.7;
+  
+  /* Layout */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  
+  /* Shadows — subtle, warm-toned */
+  --shadow-sm: 0 1px 2px rgba(26, 24, 22, 0.05);
+  --shadow-md: 0 4px 12px rgba(26, 24, 22, 0.08);
+  --shadow-lg: 0 8px 24px rgba(26, 24, 22, 0.1);
+  
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-medium: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 400ms cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* Global reset & base */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  color: var(--ink-800);
+  background: var(--cream-100);
+  min-height: 100vh;
+}
+
+/* Typography */
+h1, h2, h3, h4 {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  color: var(--ink-900);
+  line-height: var(--leading-tight);
+  letter-spacing: -0.02em;
+}
+
+h1 {
+  font-size: var(--text-3xl);
+}
+
+h2 {
+  font-size: var(--text-2xl);
+}
+
+h3 {
+  font-size: var(--text-xl);
+}
+
+p {
+  max-width: 65ch;
+}
+
+a {
+  color: var(--terracotta);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--terracotta-dark);
+}
+
+/* Form elements */
+input, textarea {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  color: var(--ink-800);
+  background: var(--cream-50);
+  border: 1.5px solid var(--cream-400);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-md);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  outline: none;
+  width: 100%;
+}
+
+input:focus, textarea:focus {
+  border-color: var(--terracotta);
+  box-shadow: 0 0 0 3px rgba(184, 92, 62, 0.1);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--ink-400);
+}
+
+textarea {
+  resize: vertical;
+  line-height: var(--leading-relaxed);
+}
+
+/* Buttons */
+button {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-md);
+  transition: all var(--transition-fast);
+  outline: none;
+}
+
+button:focus-visible {
+  box-shadow: 0 0 0 3px rgba(184, 92, 62, 0.2);
+}
+
+.btn-primary {
+  background: var(--terracotta);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--terracotta-dark);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: var(--cream-200);
+  color: var(--ink-700);
+}
+
+.btn-secondary:hover {
+  background: var(--cream-300);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--ink-600);
+}
+
+.btn-ghost:hover {
+  background: var(--cream-200);
+  color: var(--ink-800);
+}
+
+.btn-danger {
+  background: transparent;
+  color: #c44536;
+}
+
+.btn-danger:hover {
+  background: rgba(196, 69, 54, 0.08);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.4s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--cream-200);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--ink-300);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-400);
+}
